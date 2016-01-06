@@ -1,14 +1,12 @@
-var gulp = require('gulp');
-var jade = require('gulp-jade');
-var sass = require('gulp-sass');
-var livereload = require('gulp-livereload');
+const gulp = require('gulp');
+const jade = require('gulp-jade');
+const sass = require('gulp-sass');
+const connect = require('gulp-connect');
 
 const dest = './dist';
 const base = './app';
 
-gulp.task('default', function() {
-  console.log('GULP!');
-});
+gulp.task('default', ['server', 'watch']);
 
 gulp.task('jade', function() {
   gulp.src(base + '/pages/*.jade')
@@ -24,7 +22,18 @@ gulp.task('sass', function() {
   .pipe(gulp.dest(dest + '/css'));
 });
 
+gulp.task('server', function() {
+  connect.server({
+    root: 'dist',
+    livereload: true
+  });
+});
+
+gulp.task('reload', function() {
+  gulp.src('./dist/*.html')
+    .pipe(connect.reload());
+});
 gulp.task('watch', function() {
-  gulp.watch(base + '/**/*.jade', ['jade']);
-  gulp.watch(base + '/**/*.scss', ['sass']);
+  gulp.watch(base + '/**/*.jade', ['jade', 'reload']);
+  gulp.watch(base + '/**/*.scss', ['sass','reload']);
 });
